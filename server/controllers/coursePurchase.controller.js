@@ -38,8 +38,12 @@ export const createCheckoutSession = async (req, res) => {
         },
       ],
       mode: "payment",
-      success_url: `http://localhost:5173/course-progress/${courseId}`,
-      cancel_url: `http://localhost:5173/course-detail/${courseId}`,
+      // success_url: `http://localhost:5173/course-progress/${courseId}`,
+      // cancel_url: `http://localhost:5173/course-detail/${courseId}`,
+
+      success_url: `${process.env.FRONTEND_URL}/course-progress/${courseId}`,
+      cancel_url: `${process.env.FRONTEND_URL}/course-detail/${courseId}`,
+
       metadata: {
         courseId,
         userId,
@@ -148,7 +152,8 @@ export const getCourseDetailWithPurchaseStatus = async (req, res) => {
       .populate("creator")
       .populate({
         path: "lectures",
-        select: "lectureTitle isPreviewFree videoInfo.videoUrl videoInfo.publicId", // ✅ FIXED
+        select:
+          "lectureTitle isPreviewFree videoInfo.videoUrl videoInfo.publicId", // ✅ FIXED
       });
 
     if (!course) return res.status(404).json({ message: "Course not found!" });
@@ -168,8 +173,6 @@ export const getCourseDetailWithPurchaseStatus = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
-
 
 // Get all purchased courses (for admin/testing)
 export const getAllPurchasedCourse = async (_, res) => {

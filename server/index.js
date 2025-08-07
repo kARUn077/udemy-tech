@@ -16,29 +16,29 @@ connectDB();
 const app = express();
 const PORT = process.env.PORT || 8000;
 
-// ✅ Enable CORS
 app.use(cors({
   origin: process.env.FRONTEND_URL || "http://localhost:5173",
   credentials: true,
 }));
 
-// ✅ ONLY Stripe route must come before express.json()
+// ✅ Stripe webhook - BEFORE express.json()
 app.post(
   "/api/v1/purchase/webhook",
-  express.raw({ type: "application/json" }), // 👈 very important
+  express.raw({ type: "application/json" }),
   stripeWebhook
 );
 
-// ✅ Other middlewares AFTER stripe
+// ✅ Middlewares - AFTER webhook
 app.use(express.json());
 app.use(cookieParser());
 
-// ✅ Your routes
+// ✅ Routes
 app.use("/api/v1/media", mediaRoute);
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/course", courseRoute);
 app.use("/api/v1/purchase", purchaseRoute);
 app.use("/api/v1/progress", courseProgressRoute);
+
 app.get("/api/v1/health", (req, res) => {
   res.status(200).json({
     success: true,
@@ -47,9 +47,5 @@ app.get("/api/v1/health", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Server listen at port ${PORT}`);
+  console.log(`Server listening at port ${PORT}`);
 });
-
-
-// localhost:8000 → This is your backend server (Node.js + Express)
-// localhost:5173 → This is your frontend development server (Vite)

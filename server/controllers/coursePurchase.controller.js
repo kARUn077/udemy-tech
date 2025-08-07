@@ -70,7 +70,7 @@ export const createCheckoutSession = async (req, res) => {
 };
 
 export const stripeWebhook = async (req, res) => {
-  console.log("✅ Stripe webhook (unverified) called");
+  console.log("Stripe webhook (unverified) called");
 
   let event;
   try {
@@ -81,16 +81,16 @@ export const stripeWebhook = async (req, res) => {
       process.env.STRIPE_WEBHOOK_SECRET
     );
   } catch (err) {
-    console.error("❌ JSON parse error:", err);
+    console.error("JSON parse error:", err);
     return res.status(400).send("Webhook Error: Invalid JSON");
   }
 
   if (event.type === "checkout.session.completed") {
-    console.log("🎯 Checkout session completed event received");
+    console.log("Checkout session completed event received");
 
     const session = event.data.object;
     try {
-      // 🔁 Retry finding the CoursePurchase up to 5 times
+      // Retry finding the CoursePurchase up to 5 times
       let purchase;
       for (let i = 0; i < 5; i++) {
         purchase = await CoursePurchase.findOne({
@@ -101,7 +101,7 @@ export const stripeWebhook = async (req, res) => {
       }
 
       if (!purchase) {
-        console.warn("⚠️ Purchase not found for session:", session.id);
+        console.warn("Purchase not found for session:", session.id);
         return res.status(404).end();
       }
 
@@ -112,24 +112,24 @@ export const stripeWebhook = async (req, res) => {
       }
       await purchase.save();
 
-      // ✅ Enroll user in course
+      // Enroll user in course
       await User.findByIdAndUpdate(purchase.userId, {
         $addToSet: { enrolledCourses: purchase.courseId._id },
       });
 
-      // ✅ Add student to course
+      // Add student to course
       await Course.findByIdAndUpdate(purchase.courseId._id, {
         $addToSet: { enrolledStudents: purchase.userId },
       });
 
-      // ✅ Mark lectures as preview if needed
-      const lectureIds = purchase.courseId.lectures;
-      if (lectureIds && lectureIds.length > 0) {
-        await Lecture.updateMany(
-          { _id: { $in: lectureIds } },
-          { $set: { isPreviewFree: true } }
-        );
-      }
+      // Mark lectures as preview if needed
+      // const lectureIds = purchase.courseId.lectures;  -> wrong logic
+      // if (lectureIds && lectureIds.length > 0) {
+      //   await Lecture.updateMany(
+      //     { _id: { $in: lectureIds } },
+      //     { $set: { isPreviewFree: true } }
+      //   );
+      // }
 
       res.status(200).send();
     } catch (error) {

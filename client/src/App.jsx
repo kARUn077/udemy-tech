@@ -25,7 +25,6 @@ import PurchaseCourseProtectedRoute from "./components/PurchaseCourseProtectedRo
 import { ThemeProvider } from "./components/ThemeProvider";
 import CloudinaryVideoPlayer from "./pages/CloudinaryVideoPlayer";
 
-
 const appRouter = createBrowserRouter([
   {
     path: "/",
@@ -49,9 +48,9 @@ const appRouter = createBrowserRouter([
         ),
       },
       {
-    path: "video-test", // ✅ this is your test route
-    element: <CloudinaryVideoPlayer />,
-  },
+        path: "video-test", // ✅ this is your test route
+        element: <CloudinaryVideoPlayer />,
+      },
       {
         path: "my-learning",
         element: (
@@ -89,7 +88,7 @@ const appRouter = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <PurchaseCourseProtectedRoute>
-            <CourseProgress />
+              <CourseProgress />
             </PurchaseCourseProtectedRoute>
           </ProtectedRoute>
         ),
@@ -138,7 +137,7 @@ function App() {
   return (
     <main>
       <ThemeProvider>
-      <RouterProvider router={appRouter} />
+        <RouterProvider router={appRouter} />
       </ThemeProvider>
     </main>
   );

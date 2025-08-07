@@ -28,7 +28,7 @@ const CourseDetail = () => {
     if (data?.course?.lectures?.length > 0) {
       const firstPreview = data.course.lectures.find(lec => lec.isPreviewFree);
       console.log(firstPreview);
-      if (firstPreview) {
+      if (firstPreview?.videoInfo?.videoUrl) {
         // setPreviewUrl(firstPreview.videoUrl);
         setPreviewUrl(firstPreview.videoInfo?.videoUrl); 
 
